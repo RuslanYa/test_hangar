@@ -1,44 +1,41 @@
 <?php
-// Класс куриц
-class  Chicken {
 
-    private $eggs;
+class Animal{
+    public $res;
     public $num;
 
-    function __construct(){
-        $this->eggs = rand(0,1);
+    public function getRes(){
+        return $this->res;
     }
 
-    public function getEggs(){
-        return $this->eggs;
+}
+// Класс куриц
+class  Chicken extends Animal{
+
+    function __construct(){
+        $this->res = rand(0,1);
     }
+
 }
 // Класс коров
-class  Cow {
-
-    private $milk;
-    public $num;
+class  Cow extends Animal{
 
     function __construct(){
-        $this->milk = rand(8,10);
+        $this->res = rand(8,10);
     }
 
-    public function getMilk(){
-        return $this->milk;
-    }
 }
 
 // Создаем класс сарая с применением Singelton
-// Методы для добаления коровы и курицы
-// Методы получения всех яиц от всех куриц и молока от всех коров
+// Методы для добаления экземпляра животного
+// Методы получения ресурса любого животного
 // Создаем единый счетчик для регистрации в сарае $registerNum
-// И два массива с курами и кровами
+// И массив для хранения всех животных $hangar;
 class Hangar
 {
     private static  $instance;
     public static $registerNum;
-    public static $cows;
-    public static $chickens;
+    public static $hangar;
 
     public static function getInstance()
     {
@@ -49,38 +46,26 @@ class Hangar
         return self::$instance;
     }
 
-   
-    public static function addCow(){
 
-        $cow = new Cow();
-        $cow->num =  ++self::$registerNum;
-        self::$cows[] = $cow;
+    public  function  addAnimal($animal){
+        $animal = new $animal;
+        $animal->num =  ++self::$registerNum;
+        self::$hangar[] = $animal;
     }
 
-    public static function addChicken(){
 
-        $chicken = new Chicken();
-        $chicken->num = ++self::$registerNum;
-        self::$chickens[] = $chicken;
-    }
 
-    public static function collectEggs(){
-        $allEggs = 0;
-        foreach (self::$chickens as $chicken){
-            $allEggs += $chicken->getEggs();
+    public  function collect($animal){
+        $res = 0;
+
+        foreach (self::$hangar as $item){
+            if ($item instanceof $animal){
+            $res += $item->res;
+            }
         }
-        return $allEggs;
+
+        return $res;
     }
-
-    public static function collectMilk(){
-        $allMilk = 0;
-        foreach (self::$cows as $cow){
-            $allMilk += $cow->getMilk();
-        }
-        return $allMilk;
-    }
-
-
 
 }
 
@@ -89,26 +74,21 @@ $r = Hangar::getInstance();
 
 // Добавляем 10 коров
  for ($i=0; $i<=9; $i++){
-     $r::addCow();
+     $r->addAnimal('cow');
  }
 // 20 куриц
  for ($i=0; $i<=19; $i++){
-     $r::addChicken();
+     $r->addAnimal('chicken');
  }
 
-
 // Собираем надой, яйца выводим на экран
-echo 'Количество кур: ';
-echo count($r::$chickens);
-echo '<br>';
+
 echo 'Количество яиц: ';
-echo $r::collectEggs();
+echo $r->collect('chicken');
 echo '<br>';
-echo 'Количество коров: ';
-echo count($r::$cows);
-echo '<br>';
+
 echo 'Литров молока: ';
-echo $r::collectMilk();
+echo $r->collect('cow');
 
 
 ?>
